@@ -78,6 +78,54 @@
     });
   });
 
+  // Farmácia: busca de produtos
+  var farmaciaSearch = document.getElementById('farmaciaSearch');
+  var farmaciaGrid, farmaciaEmpty, farmaciaCards;
+  function filtrarFarmacia(termo){
+    if(!farmaciaGrid) return;
+    termo = termo.trim().toLowerCase();
+    var visiveis = 0;
+    farmaciaCards.forEach(function(card){
+      var texto = card.textContent.toLowerCase();
+      var mostrar = texto.indexOf(termo) !== -1;
+      card.style.display = mostrar ? '' : 'none';
+      if(mostrar){ visiveis++; }
+    });
+    farmaciaEmpty.hidden = visiveis !== 0;
+  }
+  if(farmaciaSearch){
+    farmaciaGrid = document.getElementById('farmaciaGrid');
+    farmaciaEmpty = document.getElementById('farmaciaEmpty');
+    farmaciaCards = Array.from(farmaciaGrid.querySelectorAll('.farmacia-card'));
+    farmaciaSearch.addEventListener('input', function(){
+      filtrarFarmacia(farmaciaSearch.value);
+    });
+  }
+
+  // Lupa flutuante na navegação -> abre, filtra e rola até a Farmácia
+  var navSearchWrap = document.querySelector('.nav-search');
+  var navSearchToggle = document.getElementById('navSearchToggle');
+  var navSearchInput = document.getElementById('navSearchInput');
+  if(navSearchWrap && navSearchToggle && navSearchInput){
+    navSearchToggle.addEventListener('click', function(){
+      var open = navSearchWrap.classList.toggle('open');
+      navSearchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if(open){ navSearchInput.focus(); }
+    });
+    navSearchInput.addEventListener('input', function(){
+      var termo = navSearchInput.value;
+      if(farmaciaSearch){ farmaciaSearch.value = termo; }
+      filtrarFarmacia(termo);
+    });
+    navSearchInput.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        var farmaciaSection = document.getElementById('farmacia');
+        if(farmaciaSection){ farmaciaSection.scrollIntoView({ behavior:'smooth' }); }
+      }
+    });
+  }
+
   // Contact form -> WhatsApp message
   var form = document.getElementById('contactForm');
   form.addEventListener('submit', function(e){
