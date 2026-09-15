@@ -95,6 +95,30 @@
   nav.links a.active{ color:var(--coral-deep); }
 
   .nav-cta{ display:flex; align-items:center; gap:16px; }
+  .nav-search{ position:relative; display:flex; align-items:center; }
+  .nav-search-toggle{
+    background:none; border:none; padding:6px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; transition:background .2s ease;
+  }
+  .nav-search-toggle:hover{ background:var(--cream-2,#F3EAE0); }
+  .nav-search-toggle svg{ width:20px; height:20px; fill:none; stroke:var(--ink); }
+  .nav-search-input{
+    position:absolute; right:0; top:50%; transform:translateY(-50%);
+    width:0; opacity:0; pointer-events:none;
+    padding:8px 14px; border-radius:999px; border:1px solid var(--line);
+    font-size:.88rem; background:#fff;
+    transition:width .25s ease, opacity .2s ease;
+  }
+  .nav-search.open .nav-search-input{
+    width:220px; opacity:1; pointer-events:auto;
+    right:36px;
+  }
+  @media (max-width:900px){
+    .nav-search{ order:10; width:100%; margin-top:8px; }
+    .nav-search-input{ position:static; transform:none; }
+    .nav-search.open .nav-search-input{ width:100%; right:0; }
+  }
   .menu-toggle{ display:none; background:none; border:none; padding:6px; }
   .menu-toggle span{ display:block; width:24px; height:2px; background:var(--ink); margin:5px 0; transition:transform .25s ease, opacity .25s ease;}
   .menu-toggle.open span:nth-child(1){ transform:translateY(7px) rotate(45deg);}
@@ -220,6 +244,28 @@
   .farmacia-card p{ font-size:.9rem; margin-bottom:12px; }
   .farmacia-link{ font-size:.88rem; font-weight:700; color:var(--coral-deep); text-decoration:none; }
   .farmacia-link:hover{ text-decoration:underline; }
+  .farmacia-price{ font-family:var(--font-display,inherit); font-size:1.15rem; font-weight:700; color:var(--ink,#0F5850); margin:10px 0 4px; }
+  .farmacia-buy{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    margin-top:8px; padding:10px 14px; border-radius:999px;
+    background:#25D366; color:#fff; font-weight:700; font-size:.88rem;
+    text-decoration:none; transition:filter .2s ease, transform .2s ease;
+  }
+  .farmacia-buy svg{ width:16px; height:16px; fill:#fff; flex:none; }
+  .farmacia-buy:hover{ filter:brightness(1.06); transform:translateY(-2px); }
+  .farmacia-search{
+    position:relative; max-width:420px; margin:0 auto 28px;
+  }
+  .farmacia-search input{
+    width:100%; padding:12px 16px 12px 44px; border-radius:999px;
+    border:1px solid var(--line); font-size:.95rem; background:#fff;
+  }
+  .farmacia-search input:focus{ outline:none; border-color:var(--coral-deep); }
+  .farmacia-search .search-icon{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; fill:none; stroke:var(--muted,#8a8a8a); pointer-events:none;
+  }
+  .farmacia-empty{ text-align:center; color:var(--muted,#8a8a8a); margin-bottom:20px; }
   @media (max-width:900px){ .farmacia-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:600px){ .farmacia-grid{ grid-template-columns:1fr; } }
 
