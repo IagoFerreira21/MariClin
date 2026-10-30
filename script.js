@@ -145,3 +145,119 @@
     window.open(url, '_blank');
   });
 })();
+
+/* ============================================================
+   PWA — service worker + instalação do app (Android e iOS)
+   ============================================================ */
+(function(){
+  // 1) Registra o service worker (só funciona em https ou localhost)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){ /* sem suporte: segue normal */ });
+    });
+  }
+
+  var pill = document.getElementById('installPill');
+  var pillMain = document.getElementById('installPillMain');
+  var pillClose = document.getElementById('installPillClose');
+  var modal = document.getElementById('installModal');
+  var modalClose = document.getElementById('installClose');
+  var installNow = document.getElementById('installNow');
+  if(!pill || !modal) return;
+
+  var tabs = modal.querySelectorAll('.install-tabs button');
+  var panels = modal.querySelectorAll('.install-steps');
+  var DISMISS_KEY = 'mariclin_install_dismissed';
+  var DISMISS_DAYS = 7;
+  var deferredPrompt = null;
+  var lastFocus = null;
+
+  var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                     window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  // App já instalado e aberto pelo ícone: esconde tudo que fala em instalar
+  if(isStandalone){
+    document.documentElement.classList.add('is-installed');
+    return;
+  }
+
+  function recentlyDismissed(){
+    try{
+      var t = parseInt(localStorage.getItem(DISMISS_KEY), 10);
+      return t && (Date.now() - t) < DISMISS_DAYS * 86400000;
+    }catch(e){ return false; }
+  }
+  function rememberDismiss(){
+    try{ localStorage.setItem(DISMISS_KEY, String(Date.now())); }catch(e){}
+  }
+
+  function selectOS(os){
+    tabs.forEach(function(b){
+      var on = b.getAttribute('data-os') === os;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function(p){ p.hidden = p.getAttribute('data-panel') !== os; });
+  }
+  tabs.forEach(function(b){
+    b.addEventListener('click', function(){ selectOS(b.getAttribute('data-os')); });
+  });
+
+  function openModal(){
+    lastFocus = document.activeElement;
+    selectOS(isIOS ? 'ios' : 'android');
+    installNow.hidden = !deferredPrompt;
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+    modalClose.focus();
+  }
+  function closeModal(){
+    modal.hidden = true;
+    document.body.classList.remove('modal-open');
+    if(lastFocus && lastFocus.focus){ lastFocus.focus(); }
+  }
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e){ if(e.target === modal){ closeModal(); } });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !modal.hidden){ closeModal(); }
+  });
+
+  function askInstall(){
+    if(!deferredPrompt){ openModal(); return; }
+    var p = deferredPrompt;
+    deferredPrompt = null;
+    p.prompt();
+    p.userChoice.then(function(choice){
+      if(choice && choice.outcome === 'accepted'){ pill.hidden = true; closeModal(); }
+    });
+  }
+
+  // Android / Chrome / Edge: o navegador avisa que o site pode ser instalado
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    if(!recentlyDismissed()){ pill.hidden = false; }
+  });
+  window.addEventListener('appinstalled', function(){
+    deferredPrompt = null;
+    pill.hidden = true;
+    closeModal();
+    document.documentElement.classList.add('is-installed');
+  });
+
+  // iPhone / iPad: não existe aviso automático, então mostramos o convite com as instruções
+  if(isIOS && !recentlyDismissed()){
+    setTimeout(function(){ pill.hidden = false; }, 4000);
+  }
+
+  pillMain.addEventListener('click', askInstall);
+  pillClose.addEventListener('click', function(){ pill.hidden = true; rememberDismiss(); });
+  installNow.addEventListener('click', askInstall);
+
+  // Link "Instalar o app" no rodapé (qualquer navegador): abre as instruções
+  document.querySelectorAll('[data-open-install]').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+  });
+})();
