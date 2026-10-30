@@ -1,0 +1,49 @@
+{
+  "name": "MariClin — Centro Clínico Veterinário",
+  "short_name": "MariClin",
+  "description": "Consultas, especialidade em felinos, banho e tosa, vacinas e farmácia veterinária em Ituiutaba e Capinópolis.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF6F1",
+  "theme_color": "#0F5850",
+  "categories": ["health", "medical", "shopping"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Farmácia",
+      "short_name": "Farmácia",
+      "url": "./?source=pwa#farmacia",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Contato",
+      "short_name": "Contato",
+      "url": "./?source=pwa#contato",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
